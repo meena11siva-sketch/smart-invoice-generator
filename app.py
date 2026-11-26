@@ -930,14 +930,14 @@ def download_invoice(invoice_id):
             "error"
         )
 
-        
+        return redirect(url_for("index"))
 
-            return send_file(
-            BytesIO(protected_pdf.getvalue()),
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name=filename
-        )
+    return send_file(
+        file_path,
+        mimetype="application/pdf",
+        as_attachment=True,
+        download_name=invoice["file_name"]
+    )
 
 
 # ---------------- SIGNATURE ASSET ----------------
