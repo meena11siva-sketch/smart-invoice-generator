@@ -34,11 +34,13 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "change-this-secret-key")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LOGO_PATH = os.path.join(BASE_DIR, "static", "brand-logo.png")
 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+DATA_DIR = "/tmp" if os.environ.get("VERCEL") or not os.access(BASE_DIR, os.W_OK) else BASE_DIR
+
+UPLOAD_FOLDER = os.path.join(DATA_DIR, "uploads")
 SIGNATURE_FOLDER = os.path.join(UPLOAD_FOLDER, "signatures")
 SEAL_FOLDER = os.path.join(UPLOAD_FOLDER, "seals")
-GENERATED_FOLDER = os.path.join(BASE_DIR, "generated")
-DATABASE = os.path.join(BASE_DIR, "invoices.db")
+GENERATED_FOLDER = os.path.join(DATA_DIR, "generated")
+DATABASE = os.path.join(DATA_DIR, "invoices.db")
 
 for folder in [
     SIGNATURE_FOLDER,
@@ -928,14 +930,14 @@ def download_invoice(invoice_id):
             "error"
         )
 
-        return redirect(url_for("index"))
+        
 
-    return send_file(
-        file_path,
-        mimetype="application/pdf",
-        as_attachment=True,
-        download_name=invoice["file_name"]
-    )
+            return send_file(
+            BytesIO(protected_pdf.getvalue()),
+            mimetype="application/pdf",
+            as_attachment=True,
+            download_name=filename
+        )
 
 
 # ---------------- SIGNATURE ASSET ----------------
